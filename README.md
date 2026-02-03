@@ -8,86 +8,87 @@ To write a program to implement the the Logistic Regression Model to Predict the
 2. Anaconda – Python 3.7 Installation / Jupyter notebook
 
 ## Algorithm
-1. 
-2. 
-3. 
-4. 
+1. Load the placement dataset and remove unnecessary columns such as serial number and salary.
+2. Convert all categorical attributes into numerical values using label encoding
+3. Split the dataset into training and testing sets using train–test split.
+4. Train a Logistic Regression model using the training data
+5. Predict placement status and evaluate the model using accuracy and confusion matrix.
 
 ## Program:
 ```
-# Logistic Regression for Student Placement Prediction
-
-# 1️⃣ Import Libraries
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# 2️⃣ Load Dataset
-data = pd.read_csv("Placement_Data.csv")   
-
-print("Dataset Preview:")
-print(data.head())
-
-# 3️⃣ Drop Unnecessary Columns
-data = data.drop(["sl_no", "salary"], axis=1)
-
-# 4️⃣ Convert Target Variable (status) to Binary
-# Placed = 1, Not Placed = 0
-data["status"] = data["status"].map({"Placed": 1, "Not Placed": 0})
-
-# 5️⃣ Separate Features and Target
-X = data.drop("status", axis=1)
-y = data["status"]
-
-# 6️⃣ One-Hot Encode Categorical Variables
-X = pd.get_dummies(X, drop_first=True)
-
-print("\nAfter Encoding:")
-print(X.head())
-
-# 7️⃣ Feature Scaling
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# 8️⃣ Train-Test Split
-X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled, y, test_size=0.2, random_state=42
-)
-
-# 9️⃣ Train Logistic Regression Model
-model = LogisticRegression(max_iter=1000)
-model.fit(X_train, y_train)
-
-# 🔟 Make Predictions
-y_pred = model.predict(X_test)
-y_prob = model.predict_proba(X_test)[:, 1]
-
-# 1️⃣1️⃣ Model Evaluation
-print("\nAccuracy:", accuracy_score(y_test, y_pred))
-
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
-
-# Confusion Matrix
-cm = confusion_matrix(y_test, y_pred)
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.title("Confusion Matrix - Placement Prediction")
-plt.show()
-```
+/*
 Program to implement the the Logistic Regression Model to Predict the Placement Status of Student.
 Developed by: ABDUL RAHMAN A R
-RegisterNumber: 25008775 
+RegisterNumber: 25008775
+/*
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = pd.read_csv("Placement_Data.csv")
+print(data.head())
+
+data1 = data.copy()
+
+data1.drop(['sl_no', 'salary'], axis=1, inplace=True)
+
+print("\nMissing values:\n", data1.isnull().sum())
+print("\nDuplicate values:", data1.duplicated().sum())
+
+from sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+data1['gender'] = le.fit_transform(data1['gender'])
+data1['ssc_b'] = le.fit_transform(data1['ssc_b'])
+data1['hsc_b'] = le.fit_transform(data1['hsc_b'])
+data1['hsc_s'] = le.fit_transform(data1['hsc_s'])
+data1['degree_t'] = le.fit_transform(data1['degree_t'])
+data1['workex'] = le.fit_transform(data1['workex'])
+data1['specialisation'] = le.fit_transform(data1['specialisation'])
+data1['status'] = le.fit_transform(data1['status'])
+
+x = data1.iloc[:, :-1]
+y = data1['status']
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, test_size=0.2, random_state=0
+)
+
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression(solver='liblinear')
+lr.fit(x_train, y_train)
+
+y_pred = lr.predict(x_test)
+
+from sklearn.metrics import accuracy_score
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+
+from sklearn.metrics import confusion_matrix
+confusion = confusion_matrix(y_test, y_pred)
+print("\nConfusion Matrix:\n", confusion)
+
+from sklearn.metrics import classification_report
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+from sklearn import metrics
+
+cm_display = metrics.ConfusionMatrixDisplay(
+    confusion_matrix=confusion,
+    display_labels=['Not Placed', 'Placed']
+)
+
+cm_display.plot()
+plt.show()
+
+```
+
 
 
 ## Output:
-<img width="965" height="582" alt="Screenshot 2026-02-02 113850" src="https://github.com/user-attachments/assets/b72a9fb1-16fb-46ec-a32e-a768a9cfc05a" />
+<img width="1025" height="831" alt="image" src="https://github.com/user-attachments/assets/3a82d233-7cfd-4299-8018-edf5e0a11c87" />
+
 
 
 
